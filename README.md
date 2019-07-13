@@ -15,3 +15,4 @@ _Default Listening Port: 8080_
 ```
 docker run -it --rm -p 8080:8080 cvasquez/dns-lookup-tool:latest
 ```                                                                                                                                                                                           
+4. Navigate to http://localhost:8080/ in your browser
