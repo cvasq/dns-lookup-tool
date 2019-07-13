@@ -14,18 +14,12 @@ import (
 )
 
 var clients = make(map[*websocket.Conn]bool) // connected clients
-var broadcast = make(chan DNSname)           // broadcast channel
 
 // Configure the upgrader
 var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
 		return true
 	},
-}
-
-// Define our message object
-type DNSname struct {
-	DNSname string `json:"dnsname"`
 }
 
 func main() {
