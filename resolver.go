@@ -17,7 +17,7 @@ type DNSresponse struct {
 
 func resolveDNS(dnsname string) DNSresponse {
 
-	log.Println("Resolving DNS")
+	log.Println("Resolving DNS for", dnsname)
 	ips, err := net.LookupIP(dnsname)
 	if err != nil {
 		log.Println("Could not get IPs: ", err)
@@ -31,12 +31,6 @@ func resolveDNS(dnsname string) DNSresponse {
 	ns, err := net.LookupNS(dnsname)
 	if err != nil {
 		log.Println("NS Lookup error:", err)
-	}
-	if len(ns) == 0 {
-		log.Println("no record")
-	}
-	for _, ns := range ns {
-		log.Printf("%s\n", ns.Host)
 	}
 
 	response := DNSresponse{DNSname: dnsname}

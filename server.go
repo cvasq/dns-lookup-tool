@@ -56,7 +56,7 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 	// Upgrade initial GET request to a websocket
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	// Make sure we close the connection when the function returns
 	defer ws.Close()
@@ -72,18 +72,19 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 			log.Printf("error: %v", err)
 			delete(clients, ws)
 		}
-		log.Println(msg)
-
+		log.Println("Websocket data received:", msg, "from client:", ws.RemoteAddr())
 		if !validateDomainName(msg.DNSname) {
-			log.Println("DOMAIN WAS INVALID")
+			log.Println("DOMAIN INVALID:", msg.DNSname)
 		} else {
 
-			ws.WriteJSON(resolveDNS(msg.DNSname))
+			response := resolveDNS(msg.DNSname)
+			ws.WriteJSON(response)
 			if err != nil {
 				log.Printf("error: %v", err)
 				ws.Close()
 				delete(clients, ws)
 			}
+			log.Println("Websocket data sent. DNS response to client:", ws.RemoteAddr())
 		}
 	}
 }

@@ -1,16 +1,16 @@
 <template>
   <div id="app">
-    <HelloWorld/>
+    <DNSLookupTool/>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld'
+import DNSLookupTool from './components/DNSLookupTool'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    DNSLookupTool
   }
 }
 </script>
