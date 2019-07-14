@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"log"
 	"net/http"
 	"regexp"
@@ -22,12 +21,8 @@ var upgrader = websocket.Upgrader{
 }
 
 func Start(c *cli.Context) error {
-	// Set custom port by running with --port PORT_NUM
-	// Default port is 8080
-	httpPort := flag.String("port", "8080", "HTTP Listening Address")
-	flag.Parse()
 
-	log.Println("Starting Server")
+	listeningPort := c.GlobalString("listening-port")
 
 	r := mux.NewRouter()
 	r.PathPrefix("/").HandlerFunc(FileServer)
@@ -35,8 +30,9 @@ func Start(c *cli.Context) error {
 	http.Handle("/metrics", promhttp.Handler())
 	http.HandleFunc("/dns-check", handleConnections)
 
-	log.Println("Listening on port: ", *httpPort)
-	err := http.ListenAndServe(":"+*httpPort, nil)
+	log.Println("Server listening on port", listeningPort)
+	log.Println("Access the web interface at http://localhost:" + listeningPort + "/")
+	err := http.ListenAndServe(":"+listeningPort, nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}

@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container notranslate">
         <div class="header clearfix">
             <nav>
                 <ul class="nav nav-pill float-right">

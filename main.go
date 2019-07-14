@@ -14,10 +14,10 @@ func init() {
 
 	flags = []cli.Flag{
 		cli.StringFlag{
-			Name:   "port",
+			Name:   "listening-port",
 			Value:  "8080",
 			Usage:  "Listening Port",
-			EnvVar: "PORT",
+			EnvVar: "LISTENING_PORT",
 		},
 	}
 }

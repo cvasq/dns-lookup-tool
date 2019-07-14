@@ -28,36 +28,36 @@ func resolveDNS(dnsname string) DNSresponse {
 		log.Println(err)
 	}
 
-	nss, err := net.LookupNS(dnsname)
+	ns, err := net.LookupNS(dnsname)
 	if err != nil {
 		log.Println("NS Lookup error:", err)
 	}
-	if len(nss) == 0 {
+	if len(ns) == 0 {
 		log.Println("no record")
 	}
-	for _, ns := range nss {
+	for _, ns := range ns {
 		log.Printf("%s\n", ns.Host)
 	}
 
-	ss := DNSresponse{DNSname: dnsname}
+	response := DNSresponse{DNSname: dnsname}
 
 	for _, ip := range ips {
 		if ip.To4() != nil {
-			ss.A = append(ss.A, ip.String())
+			response.A = append(response.A, ip.String())
 		} else {
-			ss.AAAA = append(ss.AAAA, ip.String())
+			response.AAAA = append(response.AAAA, ip.String())
 		}
 	}
 
 	for _, ip := range mx {
-		ss.MX = append(ss.MX, fmt.Sprintf("%v\t%v", ip.Pref, ip.Host))
+		response.MX = append(response.MX, fmt.Sprintf("%v\t%v", ip.Pref, ip.Host))
 	}
 
-	for _, ip := range nss {
-		ss.NS = append(ss.NS, ip.Host)
+	for _, ip := range ns {
+		response.NS = append(response.NS, ip.Host)
 	}
 
-	return ss
+	return response
 }
 
 func validateDomainName(domain string) bool {
