@@ -109,7 +109,8 @@ export default {
       message: '',
       typing: false,
       logs: {},
-      status: 'disconnected'
+      status: 'disconnected',
+      websocket_url: process.env.WEBSOCKET_URL
     }
   },
 
@@ -126,7 +127,8 @@ export default {
 
   methods: {
     connect () {
-      this.socket = new WebSocket('ws://127.0.0.1:8080/dns-check')
+      console.log(this.websocket_url)
+      this.socket = new WebSocket(this.websocket_url)
       this.socket.onerror = error => {
         console.log(`WebSocket error: ${error}`)
         this.disconnect()

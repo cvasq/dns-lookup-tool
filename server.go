@@ -26,6 +26,7 @@ func Start(c *cli.Context) error {
 
 	r := mux.NewRouter()
 	r.PathPrefix("/").HandlerFunc(FileServer)
+
 	http.Handle("/", r)
 	http.Handle("/metrics", promhttp.Handler())
 	http.HandleFunc("/dns-check", handleConnections)
