@@ -110,7 +110,7 @@ export default {
       typing: false,
       logs: {},
       status: 'disconnected',
-      websocket_url: process.env.WEBSOCKET_URL
+      websocket_url: 'ws://127.0.0.1:8080/dns-check'
     }
   },
 

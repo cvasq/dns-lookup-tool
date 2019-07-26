@@ -25,7 +25,7 @@ func init() {
 func main() {
 
 	app := cli.NewApp()
-	app.Usage = "A DNS lookup tool"
+	app.Usage = "DNS lookup tool"
 	app.Version = "1.0.0"
 	app.Compiled = time.Now()
 	app.Authors = []cli.Author{
