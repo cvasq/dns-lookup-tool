@@ -1,13 +1,17 @@
 package main
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
-	"regexp"
 
+	_ "github.com/cvasq/dns-lookup-tool/statik"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/rakyll/statik/fs"
+	metrics "github.com/slok/go-http-metrics/metrics/prometheus"
+	"github.com/slok/go-http-metrics/middleware"
 	"github.com/urfave/cli"
 )
 
@@ -24,16 +28,27 @@ func Start(c *cli.Context) error {
 
 	listeningPort := c.GlobalString("listening-port")
 
-	r := mux.NewRouter()
-	r.PathPrefix("/").HandlerFunc(FileServer)
+	statikFS, err := fs.New()
+	if err != nil {
+		log.Fatal(err)
+	}
+	staticHandler := http.FileServer(statikFS)
 
-	http.Handle("/", r)
+	router := mux.NewRouter()
+	router.PathPrefix("/").Handler(staticHandler)
+
+	http.Handle("/", router)
 	http.Handle("/metrics", promhttp.Handler())
 	http.HandleFunc("/dns-check", handleConnections)
+	http.HandleFunc("/health", healthCheck)
+	http.HandleFunc("/ready", readyCheck)
 
 	log.Println("Server listening on port", listeningPort)
-	log.Println("Access the web interface at http://localhost:" + listeningPort + "/")
-	err := http.ListenAndServe(":"+listeningPort, nil)
+	log.Println("Web Interface: http://localhost:" + listeningPort + "/")
+	log.Println("Prometheus Metrics: http://localhost:" + listeningPort + "/metrics")
+	log.Println("Liveness Endpoint: http://localhost:" + listeningPort + "/health")
+	log.Println("Readiness Endpoint: http://localhost:" + listeningPort + "/ready")
+	err = http.ListenAndServe(":"+listeningPort, nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
@@ -41,16 +56,27 @@ func Start(c *cli.Context) error {
 	return nil
 }
 
-// Serve web files in public directory
-func FileServer(w http.ResponseWriter, r *http.Request) {
-	log.Println(r.URL)
-	extension, _ := regexp.MatchString("\\.+[a-zA-Z]+", r.URL.EscapedPath())
-	// If the url contains an extension, use file server
-	if extension {
-		http.FileServer(http.Dir("./frontend/dist/")).ServeHTTP(w, r)
-	} else {
-		http.ServeFile(w, r, "./frontend/dist/index.html")
-	}
+// Healthcheck endpoint
+func healthCheck(w http.ResponseWriter, r *http.Request) {
+	json.NewEncoder(w).Encode("Up")
+}
+
+// Readiness endpoint
+func readyCheck(w http.ResponseWriter, r *http.Request) {
+	json.NewEncoder(w).Encode("Ready")
+}
+
+// Metrics Middleware.
+var metricsCollector = middleware.New(middleware.Config{
+	Recorder: metrics.NewRecorder(metrics.Config{}),
+})
+
+// Logging Middleware
+func logRequest(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Printf("Requested URL: %v\n", r.URL.RequestURI())
+		next.ServeHTTP(w, r)
+	})
 }
 
 func handleConnections(w http.ResponseWriter, r *http.Request) {
