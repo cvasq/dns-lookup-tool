@@ -24,4 +24,4 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflag
 FROM alpine
 WORKDIR /dns-lookup-tool
 COPY --from=builder /dns-lookup-tool/dns-lookup-tool ./dns-lookup-tool
-ENTRYPOINT ./vue-websocket-echo
+ENTRYPOINT ./dns-lookup-tool
