@@ -1,16 +1,14 @@
-//go:generate statik -src ./ui/dist
 package main
 
 import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"regexp"
 
-	_ "github.com/cvasq/dns-lookup-tool/statik"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/rakyll/statik/fs"
 	metrics "github.com/slok/go-http-metrics/metrics/prometheus"
 	"github.com/slok/go-http-metrics/middleware"
 	"github.com/urfave/cli"
@@ -29,14 +27,8 @@ func Start(c *cli.Context) error {
 
 	listeningPort := c.GlobalString("listening-port")
 
-	statikFS, err := fs.New()
-	if err != nil {
-		log.Fatal(err)
-	}
-	staticHandler := http.FileServer(statikFS)
-
 	router := mux.NewRouter()
-	router.PathPrefix("/").Handler(staticHandler)
+	router.PathPrefix("/").HandlerFunc(FileServer)
 
 	http.Handle("/", router)
 	http.Handle("/metrics", promhttp.Handler())
@@ -49,7 +41,7 @@ func Start(c *cli.Context) error {
 	log.Println("Prometheus Metrics: http://localhost:" + listeningPort + "/metrics")
 	log.Println("Liveness Endpoint: http://localhost:" + listeningPort + "/health")
 	log.Println("Readiness Endpoint: http://localhost:" + listeningPort + "/ready")
-	err = http.ListenAndServe(":"+listeningPort, nil)
+	err := http.ListenAndServe(":"+listeningPort, nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
@@ -78,6 +70,17 @@ func logRequest(next http.Handler) http.Handler {
 		log.Printf("Requested URL: %v\n", r.URL.RequestURI())
 		next.ServeHTTP(w, r)
 	})
+}
+
+// Serve web files in public directory
+func FileServer(w http.ResponseWriter, r *http.Request) {
+	extension, _ := regexp.MatchString("\\.+[a-zA-Z]+", r.URL.EscapedPath())
+	// If the url contains an extension, use file server
+	if extension {
+		http.FileServer(http.Dir("./ui/dist/")).ServeHTTP(w, r)
+	} else {
+		http.ServeFile(w, r, "./ui/dist/index.html")
+	}
 }
 
 func handleConnections(w http.ResponseWriter, r *http.Request) {

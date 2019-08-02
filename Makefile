@@ -17,7 +17,6 @@ build-vue-app:
 
 .PHONY: go
 go:
-	go generate .
 	go build .
 
 .PHONY: docker

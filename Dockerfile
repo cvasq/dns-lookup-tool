@@ -18,12 +18,11 @@ WORKDIR /dns-lookup-tool
 COPY --from=frontend-builder /dns-lookup-tool/ /dns-lookup-tool/
 RUN apk update && apk add git && apk add ca-certificates
 RUN go get -d -v
-RUN go get github.com/rakyll/statik
-RUN go generate
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags="-w -s" -o dns-lookup-tool
 
 # Copy final build to minimal container
 FROM alpine
 WORKDIR /dns-lookup-tool
 COPY --from=builder /dns-lookup-tool/dns-lookup-tool ./dns-lookup-tool
+COPY --from=builder /dns-lookup-tool/ui/dist/ ./ui/dist/
 ENTRYPOINT ./dns-lookup-tool
