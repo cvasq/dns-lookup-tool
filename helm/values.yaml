@@ -43,10 +43,10 @@ ingress:
     nginx.ingress.kubernetes.io/add-base-url: 'true'
     nginx.ingress.kubernetes.io/configuration-snippet: |
       sub_filter '</head>' '<head> <script async src="https://www.googletagmanager.com/gtag/js?id=UA-124246858-2"></script>
-                                   <script>window.dataLayer = window.dataLayer || [];
-                                   function gtag(){dataLayer.push(arguments);}
-                                   gtag("js", new Date());
-                                   gtag("config", "UA-124246858-2");</script>'; 
+                   <script>window.dataLayer = window.dataLayer || [];
+                   function gtag(){dataLayer.push(arguments);}
+                   gtag("js", new Date());
+                   gtag("config", "UA-124246858-2");</script>'; 
 
   path: /demo/dns-lookup-tool
   hosts:
