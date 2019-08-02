@@ -128,7 +128,7 @@ export default {
   methods: {
     connect () {
       console.log('websocket_url: ' + this.websocket_url)
-      console.log('env WS_URL: ' + this.websocket_url)
+      console.log('env WS_URL: ' + process.env.VUE_APP_WS_URL)
       this.socket = new WebSocket(process.env.VUE_APP_WS_URL)
       this.socket.onerror = error => {
         console.log(`WebSocket error: ${error}`)
