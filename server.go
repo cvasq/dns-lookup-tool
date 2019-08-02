@@ -30,7 +30,7 @@ func Start(c *cli.Context) error {
 	router := mux.NewRouter()
 	router.PathPrefix("/").HandlerFunc(FileServer)
 
-	http.Handle("/", router)
+	http.Handle("/", logRequest(metricsCollector.Handler("", router)))
 	http.Handle("/metrics", promhttp.Handler())
 	http.HandleFunc("/dns-check", handleConnections)
 	http.HandleFunc("/health", healthCheck)
