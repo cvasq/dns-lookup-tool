@@ -12,7 +12,7 @@ module.exports = {
     plugins: [
       new webpack.DefinePlugin({
         'process.env': {
-          'VUE_APP_WS_URL': JSON.stringify(process.env.VUE_APP_WS_URL)
+          'VUE_APP_WS_URL': process.env.VUE_APP_WS_URL
         }
       })
     ]
