@@ -7,6 +7,9 @@ frontend: build-vue-app
 go-build: go
 container: docker
 
+export VUE_APP_BASE_PATH=/
+export VUE_APP_WS_URL=ws://localhost:8080/dns-check
+
 .PHONY: build-vue-app
 build-vue-app: 
 	npm --prefix $(FRONTEND_DIR) install
@@ -14,6 +17,7 @@ build-vue-app:
 
 .PHONY: go
 go:
+	go generate .
 	go build .
 
 .PHONY: docker
