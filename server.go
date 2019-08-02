@@ -1,3 +1,4 @@
+//go:generate statik -src ./ui/dist
 package main
 
 import (

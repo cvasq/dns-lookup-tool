@@ -1,10 +1,10 @@
 APP_NAME=dns-lookup-tool
 FRONTEND_DIR=ui
 
-all: build-vue-app statik go docker 
+all: build-vue-app go docker 
 build: frontend go-build
-frontend: build-vue-app statik
-go-build: statik go
+frontend: build-vue-app
+go-build: go
 container: docker
 
 .PHONY: build-vue-app
@@ -19,7 +19,3 @@ go:
 .PHONY: docker
 docker:
 	docker build -t cvasquez/$(APP_NAME) .
-
-.PHONY: statik
-statik:
-	statik -src=./$(FRONTEND_DIR)/dist
