@@ -1,5 +1,7 @@
 <template>
+
   <div class="container notranslate">
+
         <div class="header clearfix">
             <nav>
                 <ul class="nav nav-pill float-right">
@@ -24,12 +26,10 @@
                 <a href="#" @click.prevent="message ='reddit.com'">reddit.com, </a>
                 <a href="#" @click.prevent="message ='yahoo.com'">yahoo.com</a><br>
               </small>
-
               <div v-if="status === 'connected'">
                 <br>
                 <form @submit.prevent="sendMessage" action="/">
                   <input v-model="message" class="form-control" placeholder="DNS Name..." @input="typing = true">
-
                 </form>
                     <table class="table table-striped table-bordered">
                     <thead>
@@ -110,7 +110,7 @@ export default {
       typing: false,
       logs: {},
       status: 'disconnected',
-      websocket_url: 'ws://127.0.0.1:8080/dns-check'
+      websocket_url: process.env.VUE_APP_WS_URL,
     }
   },
 
